@@ -13,13 +13,31 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
-import { Wand2, Loader2, Palette, Monitor, Smartphone } from "lucide-react";
+import {
+  Wand2,
+  Loader2,
+  Palette,
+  Monitor,
+  Smartphone,
+  AlertTriangle,
+  CheckCircle,
+  RefreshCw,
+} from "lucide-react";
+import { saveGeneratedImages, type GeneratedImage } from "@/lib/storage";
 
 interface GenerationParams {
   prompt: string;
   size: string;
   count: number;
   style: string;
+}
+
+interface GenerationState {
+  isGenerating: boolean;
+  error: string | null;
+  success: boolean;
+  progress: number;
+  retryCount: number;
 }
 
 export function ImageGenerator() {
@@ -30,7 +48,13 @@ export function ImageGenerator() {
     style: "realistic",
   });
 
-  const [isGenerating, setIsGenerating] = useState(false);
+  const [state, setState] = useState<GenerationState>({
+    isGenerating: false,
+    error: null,
+    success: false,
+    progress: 0,
+    retryCount: 0,
+  });
 
   const sizeOptions = [
     { value: "512x512", label: "512×512", icon: Smartphone },
@@ -44,19 +68,93 @@ export function ImageGenerator() {
     { value: "artistic", label: "艺术风格", description: "油画水彩效果" },
   ];
 
-  const handleGenerate = async () => {
+  const handleGenerate = async (isRetry = false) => {
     if (!params.prompt.trim()) return;
 
-    setIsGenerating(true);
+    // 重置状态
+    setState((prev) => ({
+      ...prev,
+      isGenerating: true,
+      error: null,
+      success: false,
+      progress: 0,
+      retryCount: isRetry ? prev.retryCount + 1 : 0,
+    }));
+
     try {
-      // TODO: 实际的 API 调用将在下个阶段实现
-      console.log("生成参数:", params);
-      await new Promise((resolve) => setTimeout(resolve, 2000)); // 模拟 API 调用
+      // 模拟进度更新
+      const progressInterval = setInterval(() => {
+        setState((prev) => ({
+          ...prev,
+          progress: Math.min(prev.progress + 10, 90),
+        }));
+      }, 500);
+
+      // 调用生成API
+      const response = await fetch("/api/generate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(params),
+      });
+
+      clearInterval(progressInterval);
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `HTTP ${response.status}`);
+      }
+
+      const result = await response.json();
+
+      if (!result.success || !result.images?.length) {
+        throw new Error("生成失败：未返回有效图片");
+      }
+
+      // 保存到本地存储
+      saveGeneratedImages(result.images);
+
+      setState((prev) => ({
+        ...prev,
+        isGenerating: false,
+        success: true,
+        progress: 100,
+        error: null,
+      }));
+
+      // 3秒后自动清除成功状态
+      setTimeout(() => {
+        setState((prev) => ({ ...prev, success: false, progress: 0 }));
+      }, 3000);
     } catch (error) {
-      console.error("生成失败:", error);
-    } finally {
-      setIsGenerating(false);
+      const errorMessage =
+        error instanceof Error ? error.message : "生成失败，请重试";
+
+      setState((prev) => ({
+        ...prev,
+        isGenerating: false,
+        error: errorMessage,
+        progress: 0,
+      }));
+
+      console.error("生成图片失败:", error);
     }
+  };
+
+  const handleRetry = () => {
+    if (state.retryCount < 3) {
+      handleGenerate(true);
+    } else {
+      setState((prev) => ({
+        ...prev,
+        error: "重试次数过多，请稍后再试",
+      }));
+    }
+  };
+
+  const clearError = () => {
+    setState((prev) => ({ ...prev, error: null }));
   };
 
   return (
@@ -176,14 +274,74 @@ export function ImageGenerator() {
 
         <Separator />
 
+        {/* 错误提示 */}
+        {state.error && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+            <div className="flex items-center gap-2 text-red-700 mb-2">
+              <AlertTriangle className="w-4 h-4" />
+              <span className="font-medium">生成失败</span>
+            </div>
+            <p className="text-red-600 text-sm mb-3">{state.error}</p>
+            <div className="flex gap-2">
+              {state.retryCount < 3 && (
+                <Button
+                  onClick={handleRetry}
+                  variant="outline"
+                  size="sm"
+                  className="text-red-600 border-red-200 hover:bg-red-50"
+                >
+                  <RefreshCw className="w-4 h-4 mr-1" />
+                  重试 ({3 - state.retryCount} 次)
+                </Button>
+              )}
+              <Button
+                onClick={clearError}
+                variant="ghost"
+                size="sm"
+                className="text-red-600"
+              >
+                关闭
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* 成功提示 */}
+        {state.success && (
+          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+            <div className="flex items-center gap-2 text-green-700">
+              <CheckCircle className="w-4 h-4" />
+              <span className="font-medium">生成成功！</span>
+              <span className="text-sm text-green-600">
+                图片已保存到历史记录
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* 进度条 */}
+        {state.isGenerating && state.progress > 0 && (
+          <div className="space-y-2">
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div
+                className="bg-primary h-2 rounded-full transition-all duration-300"
+                style={{ width: `${state.progress}%` }}
+              />
+            </div>
+            <p className="text-sm text-muted-foreground text-center">
+              生成进度 {state.progress}%
+            </p>
+          </div>
+        )}
+
         {/* 生成按钮 */}
         <Button
-          onClick={handleGenerate}
-          disabled={!params.prompt.trim() || isGenerating}
+          onClick={() => handleGenerate()}
+          disabled={!params.prompt.trim() || state.isGenerating}
           className="w-full h-12 text-base font-medium"
           size="lg"
         >
-          {isGenerating ? (
+          {state.isGenerating ? (
             <>
               <Loader2 className="w-5 h-5 mr-2 animate-spin" />
               正在生成中...
