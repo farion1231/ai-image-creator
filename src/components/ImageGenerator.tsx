@@ -157,6 +157,44 @@ export function ImageGenerator() {
     setState((prev) => ({ ...prev, error: null }));
   };
 
+  const handleOptimizePrompt = async () => {
+    if (!params.prompt.trim()) return;
+
+    try {
+      setState((prev) => ({ ...prev, isGenerating: true }));
+
+      const response = await fetch("/api/optimize-prompt", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          prompt: params.prompt,
+          style: params.style,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "优化失败");
+      }
+
+      const result = await response.json();
+
+      if (result.success && result.optimizedPrompt) {
+        setParams((prev) => ({ ...prev, prompt: result.optimizedPrompt }));
+      }
+    } catch (error) {
+      console.error("优化提示词失败:", error);
+      setState((prev) => ({
+        ...prev,
+        error: error instanceof Error ? error.message : "优化失败",
+      }));
+    } finally {
+      setState((prev) => ({ ...prev, isGenerating: false }));
+    }
+  };
+
   return (
     <Card className="card-shadow">
       <CardHeader>
@@ -172,9 +210,22 @@ export function ImageGenerator() {
       <CardContent className="space-y-6">
         {/* 提示词输入 */}
         <div className="space-y-2">
-          <Label htmlFor="prompt" className="text-sm font-medium">
-            描述你的创意 *
-          </Label>
+          <div className="flex items-center justify-between">
+            <Label htmlFor="prompt" className="text-sm font-medium">
+              描述你的创意 *
+            </Label>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleOptimizePrompt}
+              disabled={!params.prompt.trim() || state.isGenerating}
+              className="text-xs"
+            >
+              <Wand2 className="w-3 h-3 mr-1" />
+              AI优化
+            </Button>
+          </div>
           <Textarea
             id="prompt"
             placeholder="例如：一只可爱的小猫坐在彩虹桥上，背景是星空，梦幻风格..."
