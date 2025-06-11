@@ -32,6 +32,12 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+.env.production
+.env.development
+.env.local
+
+# docker环境变量文件
+docker-compose.override.yml
 
 # vercel
 .vercel

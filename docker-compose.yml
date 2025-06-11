@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  ai-image-creator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+    # 从.env文件读取环境变量（.env文件已在.gitignore中被忽略）
+    env_file:
+      - .env.production
+    restart: unless-stopped
+    # 如果需要持久化数据，可以添加volumes
+    # volumes:
+    #   - ./data:/app/data 
