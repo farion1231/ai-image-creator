@@ -1,17 +1,6 @@
 # 使用官方Node.js 18 Alpine镜像作为基础镜像
 FROM node:18-alpine AS base
 
-# 安装依赖阶段
-FROM base AS deps
-# 设置工作目录
-WORKDIR /app
-
-# 复制package文件
-COPY package.json package-lock.json* ./
-
-# 安装依赖（仅生产依赖）
-RUN npm ci --only=production
-
 # 构建阶段
 FROM base AS builder
 WORKDIR /app
@@ -36,10 +25,8 @@ WORKDIR /app
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-# 复制public文件夹
-COPY --from=builder /app/public ./public
-
 # 复制构建产物
+COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
