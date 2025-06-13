@@ -21,7 +21,7 @@ export default function RootLayout({
   return (
     <html lang="zh-CN">
       <body
-        className={`${inter.variable} font-sans antialiased bg-gradient-to-br from-blue-50 via-white to-indigo-50 min-h-screen`}
+        className={`${inter.variable} font-sans antialiased bg-gradient-to-br from-sky-50/80 via-blue-50/60 to-cyan-50/80 min-h-screen`}
       >
         <Navigation />
         {children}

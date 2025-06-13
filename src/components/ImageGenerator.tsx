@@ -29,13 +29,15 @@ export function ImageGenerator() {
   } = useImageGeneration();
 
   return (
-    <Card className="card-shadow">
+    <Card className="gradient-card card-shadow border-blue-100/50 backdrop-blur-md">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Palette className="w-5 h-5 text-primary" />
+        <CardTitle className="flex items-center gap-2 text-slate-700">
+          <div className="p-2 bg-gradient-to-br from-sky-400 to-blue-500 rounded-xl shadow-lg">
+            <Palette className="w-5 h-5 text-white" />
+          </div>
           创作图片
         </CardTitle>
-        <CardDescription>
+        <CardDescription className="text-slate-600">
           描述你想要的图片，AI 将为你生成精美的作品
         </CardDescription>
       </CardHeader>
@@ -49,12 +51,12 @@ export function ImageGenerator() {
           isGenerating={state.isGenerating}
         />
 
-        <Separator />
+        <Separator className="bg-gradient-to-r from-sky-200 via-blue-200 to-cyan-200 h-px" />
 
         {/* 图片设置 */}
         <ImageSettings params={params} onParamsChange={updateParams} />
 
-        <Separator />
+        <Separator className="bg-gradient-to-r from-sky-200 via-blue-200 to-cyan-200 h-px" />
 
         {/* 状态消息 */}
         <StatusMessages

@@ -31,11 +31,13 @@ export function ImageGallery() {
   );
 
   return (
-    <Card className="card-shadow h-fit">
+    <Card className="gradient-card card-shadow border-blue-100/50 backdrop-blur-md h-fit">
       <CardHeader>
-        <CardTitle className="flex items-center justify-between">
+        <CardTitle className="flex items-center justify-between text-slate-700">
           <div className="flex items-center gap-2">
-            <History className="w-5 h-5 text-primary" />
+            <div className="p-2 bg-gradient-to-br from-sky-400 to-blue-500 rounded-xl shadow-lg">
+              <History className="w-5 h-5 text-white" />
+            </div>
             创作历史
           </div>
           <Button
@@ -43,13 +45,16 @@ export function ImageGallery() {
             variant="ghost"
             size="sm"
             disabled={isLoading}
+            className="text-slate-600 hover:text-slate-800 hover:bg-sky-50/50"
           >
             <RefreshCw
               className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`}
             />
           </Button>
         </CardTitle>
-        <CardDescription>查看和管理你的 AI 图片作品</CardDescription>
+        <CardDescription className="text-slate-600">
+          查看和管理你的 AI 图片作品
+        </CardDescription>
       </CardHeader>
 
       <CardContent className="space-y-4">
@@ -75,7 +80,7 @@ export function ImageGallery() {
 
         {/* 底部统计 */}
         {images.length > 0 && (
-          <div className="pt-3 border-t text-center text-sm text-muted-foreground">
+          <div className="pt-3 border-t border-sky-200/50 text-center text-sm text-slate-500">
             共 {images.length} 张作品
             {images.filter((img) => img.isFavorite).length > 0 && (
               <span className="ml-2">

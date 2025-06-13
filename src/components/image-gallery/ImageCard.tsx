@@ -25,9 +25,9 @@ export function ImageCard({
   };
 
   return (
-    <div className="group relative bg-card border rounded-lg overflow-hidden hover:shadow-md transition-all">
+    <div className="group relative bg-white/95 border border-sky-100/60 rounded-xl overflow-hidden hover:shadow-lg hover:shadow-sky-100/40 transition-all duration-300 backdrop-blur-sm">
       {/* 图片预览 */}
-      <div className="aspect-square bg-muted relative overflow-hidden">
+      <div className="aspect-square bg-sky-50/50 relative overflow-hidden">
         <img
           src={image.url}
           alt={image.prompt}
@@ -35,12 +35,12 @@ export function ImageCard({
           onError={handleImageError}
         />
         <div
-          className="absolute inset-0 bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center text-muted-foreground"
+          className="absolute inset-0 bg-gradient-to-br from-sky-100 to-blue-100 flex items-center justify-center text-slate-500"
           hidden
         >
           <div className="text-center">
-            <div className="w-12 h-12 bg-muted-foreground/20 rounded-lg mx-auto mb-2 flex items-center justify-center">
-              <History className="w-6 h-6" />
+            <div className="w-12 h-12 bg-sky-200/40 rounded-xl mx-auto mb-2 flex items-center justify-center">
+              <History className="w-6 h-6 text-sky-600" />
             </div>
             <div className="text-xs">图片加载失败</div>
           </div>
@@ -51,40 +51,42 @@ export function ImageCard({
           <Button
             size="sm"
             variant="secondary"
-            className="w-8 h-8 p-0"
+            className="w-8 h-8 p-0 bg-white/90 hover:bg-white border-sky-100"
             onClick={() => onToggleFavorite(image.id)}
           >
             <Heart
               className={`w-4 h-4 ${
-                image.isFavorite ? "fill-red-500 text-red-500" : ""
+                image.isFavorite
+                  ? "fill-red-500 text-red-500"
+                  : "text-slate-600"
               }`}
             />
           </Button>
           <Button
             size="sm"
             variant="secondary"
-            className="w-8 h-8 p-0"
+            className="w-8 h-8 p-0 bg-white/90 hover:bg-white border-sky-100"
             onClick={() => onDownload(image)}
           >
-            <Download className="w-4 h-4" />
+            <Download className="w-4 h-4 text-slate-600" />
           </Button>
           <Button
             size="sm"
             variant="secondary"
-            className="w-8 h-8 p-0"
+            className="w-8 h-8 p-0 bg-white/90 hover:bg-white border-sky-100"
             onClick={() => onDelete(image.id)}
           >
-            <Trash2 className="w-4 h-4" />
+            <Trash2 className="w-4 h-4 text-slate-600" />
           </Button>
         </div>
       </div>
 
       {/* 图片信息 */}
       <div className="p-3 space-y-2">
-        <div className="text-sm text-muted-foreground line-clamp-2">
+        <div className="text-sm text-slate-600 line-clamp-2">
           {image.prompt}
         </div>
-        <div className="flex items-center justify-between text-xs text-muted-foreground">
+        <div className="flex items-center justify-between text-xs text-slate-500">
           <span>{image.size}</span>
           <span>{formatTimeAgo(image.timestamp)}</span>
         </div>
