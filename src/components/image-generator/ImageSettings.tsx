@@ -16,50 +16,35 @@ export function ImageSettings({ params, onParamsChange }: ImageSettingsProps) {
         {/* 图片尺寸 */}
         <div className="space-y-3">
           <Label className="text-sm font-medium">图片尺寸</Label>
-          <div className="grid grid-cols-1 gap-2">
-            {sizeOptions.map((option) => {
-              const Icon = option.icon;
-              return (
-                <button
-                  key={option.value}
-                  type="button"
-                  onClick={() => onParamsChange({ size: option.value })}
-                  className={`flex items-center gap-3 p-3 rounded-lg border-2 transition-all hover:bg-accent/50 ${
-                    params.size === option.value
-                      ? "border-primary bg-primary/5"
-                      : "border-border"
-                  }`}
-                >
-                  <Icon className="w-4 h-4 text-muted-foreground" />
-                  <span className="font-medium">{option.label}</span>
-                </button>
-              );
-            })}
-          </div>
+          <select
+            value={params.size}
+            onChange={(e) => onParamsChange({ size: e.target.value })}
+            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <option value="">选择图片尺寸</option>
+            {sizeOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
         </div>
 
         {/* 风格选择 */}
         <div className="space-y-3">
           <Label className="text-sm font-medium">艺术风格</Label>
-          <div className="grid grid-cols-1 gap-2">
+          <select
+            value={params.style}
+            onChange={(e) => onParamsChange({ style: e.target.value })}
+            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <option value="">选择艺术风格</option>
             {styleOptions.map((option) => (
-              <button
-                key={option.value}
-                type="button"
-                onClick={() => onParamsChange({ style: option.value })}
-                className={`flex flex-col items-start gap-1 p-3 rounded-lg border-2 transition-all hover:bg-accent/50 ${
-                  params.style === option.value
-                    ? "border-primary bg-primary/5"
-                    : "border-border"
-                }`}
-              >
-                <span className="font-medium">{option.label}</span>
-                <span className="text-xs text-muted-foreground">
-                  {option.description}
-                </span>
-              </button>
+              <option key={option.value} value={option.value}>
+                {option.label} - {option.description}
+              </option>
             ))}
-          </div>
+          </select>
         </div>
       </div>
 
