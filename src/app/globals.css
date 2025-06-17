@@ -149,4 +149,43 @@
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 3;
   }
+  
+  /* 自定义滑块样式 */
+  .slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0ea5e9, #3b82f6);
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+    border: 2px solid white;
+  }
+  
+  .slider::-webkit-slider-thumb:hover {
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+    transform: scale(1.1);
+  }
+  
+  .slider::-webkit-slider-track {
+    background: linear-gradient(to right, #e0f2fe 0%, #0ea5e9 100%);
+    border-radius: 8px;
+  }
+  
+  .slider::-moz-range-thumb {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0ea5e9, #3b82f6);
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+    border: 2px solid white;
+  }
+  
+  .slider::-moz-range-track {
+    background: linear-gradient(to right, #e0f2fe 0%, #0ea5e9 100%);
+    border-radius: 8px;
+    border: none;
+  }
 }

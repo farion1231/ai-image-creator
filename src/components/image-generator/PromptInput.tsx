@@ -8,6 +8,7 @@ interface PromptInputProps {
   onPromptChange: (prompt: string) => void;
   onOptimizePrompt: () => void;
   isGenerating: boolean;
+  placeholder?: string;
 }
 
 export function PromptInput({
@@ -15,6 +16,7 @@ export function PromptInput({
   onPromptChange,
   onOptimizePrompt,
   isGenerating,
+  placeholder = "例如：一只可爱的小猫坐在彩虹桥上，背景是星空，梦幻风格...",
 }: PromptInputProps) {
   return (
     <div className="space-y-2">
@@ -36,7 +38,7 @@ export function PromptInput({
       </div>
       <Textarea
         id="prompt"
-        placeholder="例如：一只可爱的小猫坐在彩虹桥上，背景是星空，梦幻风格..."
+        placeholder={placeholder}
         value={prompt}
         onChange={(e) => onPromptChange(e.target.value)}
         className="min-h-[100px] resize-none"

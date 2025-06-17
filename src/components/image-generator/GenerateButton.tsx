@@ -5,12 +5,14 @@ interface GenerateButtonProps {
   onGenerate: () => void;
   isGenerating: boolean;
   disabled: boolean;
+  buttonText?: string;
 }
 
 export function GenerateButton({
   onGenerate,
   isGenerating,
   disabled,
+  buttonText,
 }: GenerateButtonProps) {
   return (
     <Button
@@ -27,7 +29,7 @@ export function GenerateButton({
       ) : (
         <>
           <Wand2 className="w-5 h-5 mr-2" />
-          开始创作
+          {buttonText || "开始创作"}
         </>
       )}
     </Button>
