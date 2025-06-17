@@ -1,6 +1,6 @@
 "use client";
 
-import { UnifiedImageGenerator } from "@/components/UnifiedImageGenerator";
+import { ImageGenerator } from "@/components/ImageGenerator";
 import { Sparkles } from "lucide-react";
 
 export default function Home() {
@@ -22,9 +22,9 @@ export default function Home() {
           </p>
         </div>
 
-        {/* 统一图片生成器 */}
+        {/* 图片生成器 */}
         <div className="max-w-4xl mx-auto">
-          <UnifiedImageGenerator />
+          <ImageGenerator />
         </div>
       </div>
     </div>
