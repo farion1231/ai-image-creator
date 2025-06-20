@@ -70,7 +70,7 @@ export function useImageToImageGeneration() {
         isUploading: false,
         previewUrl,
       }));
-    } catch (error) {
+    } catch {
       setUploadState((prev) => ({
         ...prev,
         isUploading: false,

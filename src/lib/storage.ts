@@ -1,15 +1,8 @@
-export interface GeneratedImage {
-  id: string;
-  url: string;
-  prompt: string;
-  timestamp: string;
-  size: string;
-  style: string;
-  isFavorite?: boolean;
-}
+import type { GeneratedImage, StorageStats } from '@/types';
+import { STORAGE_KEYS, API_CONFIG } from '@/constants';
 
-const STORAGE_KEY = 'ai-image-generations';
-const FAVORITES_KEY = 'ai-image-favorites';
+const STORAGE_KEY = STORAGE_KEYS.IMAGES;
+const FAVORITES_KEY = STORAGE_KEYS.FAVORITES;
 
 // 获取所有生成的图片
 export function getStoredImages(): GeneratedImage[] {
@@ -41,8 +34,8 @@ export function saveGeneratedImages(newImages: GeneratedImage[]): void {
     const existingImages = getStoredImages();
     const allImages = [...newImages, ...existingImages];
     
-    // 限制最多保存100张图片
-    const limitedImages = allImages.slice(0, 100);
+    // 限制最多保存图片数量
+    const limitedImages = allImages.slice(0, API_CONFIG.MAX_STORED_IMAGES);
     
     localStorage.setItem(STORAGE_KEY, JSON.stringify(limitedImages));
   } catch (error) {
@@ -142,7 +135,7 @@ export function clearAllData(): void {
 }
 
 // 获取存储统计信息
-export function getStorageStats() {
+export function getStorageStats(): StorageStats {
   const images = getStoredImages();
   const favorites = images.filter(img => img.isFavorite);
   

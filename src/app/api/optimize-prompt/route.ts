@@ -1,14 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { optimizePrompt } from '@/lib/ai-providers';
-
-interface OptimizeRequest {
-  prompt: string;
-  style: string;
-}
+import type { OptimizePromptRequest, OptimizePromptResponse } from '@/types/api';
 
 export async function POST(request: NextRequest) {
   try {
-    const body: OptimizeRequest = await request.json();
+    const body: OptimizePromptRequest = await request.json();
     const { prompt, style } = body;
 
     // 验证输入
@@ -29,12 +25,12 @@ export async function POST(request: NextRequest) {
     // 使用AI SDK优化提示词
     const optimizedPrompt = await optimizePrompt(prompt, style);
 
-    return NextResponse.json({
+    const response: OptimizePromptResponse = {
       success: true,
-      originalPrompt: prompt,
-      optimizedPrompt: optimizedPrompt,
-      style: style
-    });
+      optimizedPrompt: optimizedPrompt
+    };
+    
+    return NextResponse.json(response);
 
   } catch (error) {
     console.error('优化提示词时出错:', error);

@@ -1,22 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-
-interface GeneratedImage {
-  id: string;
-  url: string;
-  prompt: string;
-  timestamp: string;
-  size: string;
-  style: string;
-  source: "image-to-image";
-  strength: number;
-}
-
-// 风格修饰符映射
-const styleModifiers: Record<string, string> = {
-  realistic: "高画质, 写实风格, 专业摄影",
-  anime: "动漫风格, 日式插画, 精美绘画",
-  artistic: "艺术风格, 油画质感, 创意插画",
-};
+import type { ImageToImageResponse } from '@/types/api';
+import type { GeneratedImage } from '@/types';
+import { STYLE_MODIFIERS } from '@/constants';
 
 export async function POST(request: NextRequest) {
   try {
@@ -66,7 +51,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 构建完整的提示词
-    const styleModifier = styleModifiers[style] || "";
+    const styleModifier = STYLE_MODIFIERS[style] || "";
     const fullPrompt = `${prompt}, ${styleModifier}`;
 
     // 检查必要的环境变量
@@ -87,8 +72,9 @@ export async function POST(request: NextRequest) {
         process.env.OPENAI_API_BASE_URL || "https://api.openai.com/v1";
 
       // 将图片转换为base64
-      const imageBuffer = Buffer.from(await image.arrayBuffer());
-      const base64Image = imageBuffer.toString("base64");
+      // const imageBuffer = Buffer.from(await image.arrayBuffer());
+      // TODO: 在实际支持以图生图的API中使用
+      // const base64Image = imageBuffer.toString("base64");
 
       // 模拟调用支持image-to-image的API
       // 这里使用DALL-E 3的变体功能作为替代
@@ -127,7 +113,7 @@ export async function POST(request: NextRequest) {
 
       // 处理API响应，格式化为我们需要的数据结构
       images =
-        result.data?.map((item: any, index: number) => ({
+        result.data?.map((item: { url?: string; b64_json?: string }, index: number) => ({
           id: `img2img_${Date.now()}_${index}`,
           url: item.url || item.b64_json,
           prompt: prompt,
@@ -159,12 +145,12 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    return NextResponse.json({
+    const response: ImageToImageResponse = {
       success: true,
-      images: images,
-      count: images.length,
-      mode: "image-to-image",
-    });
+      images: images
+    };
+    
+    return NextResponse.json(response);
   } catch (error) {
     console.error("以图生图时出错:", error);
 

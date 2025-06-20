@@ -5,9 +5,9 @@ import {
   getStoredImages, 
   deleteStoredImage, 
   toggleImageFavorite, 
-  downloadImage,
-  type GeneratedImage 
+  downloadImage
 } from "@/lib/storage";
+import type { GeneratedImage } from "@/types";
 
 export function useImageGallery() {
   const [images, setImages] = useState<GeneratedImage[]>([]);

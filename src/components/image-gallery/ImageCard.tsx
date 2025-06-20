@@ -2,8 +2,8 @@
 
 import { Button } from "@/components/ui/button";
 import { Heart, Download, Trash2, History } from "lucide-react";
-import { type GeneratedImage } from "@/lib/storage";
-import { formatTimeAgo } from "@/lib/utils/time";
+import { type GeneratedImage } from "@/types";
+import { formatTimeAgo } from "@/lib/utils";
 
 interface ImageCardProps {
   image: GeneratedImage;

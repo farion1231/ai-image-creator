@@ -1,158 +1,181 @@
 # AI 图片生成器
 
-一个基于 Next.js + shadcn/ui 的现代化 AI 图片生成应用，采用活泼舒适的设计风格。
+一个基于 Next.js 15 的现代化 AI 图片生成应用，支持文本生图和以图生图两种模式，集成智能提示词优化、错误分析等 AI 增强功能。
 
-## 技术栈
+## ✨ 功能特色
 
-- **前端框架**: Next.js 15 + TypeScript
-- **UI 组件库**: shadcn/ui
-- **样式**: Tailwind CSS v4
-- **图标**: Lucide React
-- **字体**: Inter
+### 🎨 双模式生成
+- **文本生图**: 通过描述文字创作全新图片
+- **以图生图**: 基于参考图片进行创意变换，支持变化强度调节
 
-## 设计特色
+### 🤖 AI 智能增强
+- **提示词优化**: 使用 GPT-4o-mini 自动优化用户输入，添加专业艺术术语
+- **智能错误分析**: AI 分析错误信息并提供中文友好的解决方案
+- **创意建议**: 基于历史记录生成个性化提示词建议
+- **图片内容分析**: 自动分析生成图片的内容和质量
 
-- 🎨 活泼舒适的视觉风格
-- 💙 淡蓝色系主题色调
-- 🌟 柔和的圆角和阴影效果
-- 📱 完全响应式设计
+### 🖼️ 图片管理
+- **本地存储**: 自动保存生成历史，支持搜索和筛选
+- **收藏功能**: 标记喜爱的图片，便于管理
+- **批量下载**: 支持图片下载和批量操作
+- **多种尺寸**: 支持正方形、宽屏、手机屏幕等多种比例
 
-## 当前进展 (Phase 1.1)
+### 🎨 丰富的艺术风格
+支持 12 种艺术风格：写实、动漫、艺术、赛博朋克、复古、极简、印象派、波普艺术、素描、水彩、哥特、奇幻
 
-✅ **已完成**:
+## 🛠️ 技术栈
 
-- [x] Next.js 项目搭建
-- [x] shadcn/ui 组件库集成
-- [x] 基础页面布局设计
-- [x] 活泼舒适的 UI 主题定制
-- [x] 图片生成器组件 (ImageGenerator)
-- [x] 图片历史组件 (ImageGallery)
-- [x] 响应式布局实现
+- **前端框架**: Next.js 15 + TypeScript + React 19
+- **UI 组件**: shadcn/ui + Tailwind CSS v4
+- **AI 集成**: Vercel AI SDK + @ai-sdk/openai
+- **图标库**: Lucide React
+- **状态管理**: React Hooks + 本地存储
+- **构建工具**: Turbopack (开发) + Next.js (生产)
 
-## 开发指南
+## 🚀 快速开始
 
-### 安装依赖
+### 环境要求
+- Node.js 18+ 
+- npm 或 yarn
 
+### 安装与启动
+
+1. **克隆项目**
+```bash
+git clone <repository-url>
+cd ai-image-creator
+```
+
+2. **安装依赖**
 ```bash
 npm install
 ```
 
-### 启动开发服务器
+3. **配置环境变量**
+```bash
+# 复制环境变量模板
+cp .env.example .env.local
 
+# 编辑 .env.local 添加以下配置
+OPENAI_API_KEY=your-openai-api-key
+OPENAI_API_BASE_URL=https://api.openai.com/v1  # 可选，自定义API地址
+```
+
+4. **启动开发服务器**
 ```bash
 npm run dev
 ```
 
-在浏览器中访问 [http://localhost:3000](http://localhost:3000) 查看应用。
+5. **访问应用**
+在浏览器中打开 [http://localhost:3000](http://localhost:3000)
 
 ### 构建生产版本
-
 ```bash
 npm run build
 npm start
 ```
 
-## 项目结构
+## 📁 项目结构
 
 ```
 src/
-├── app/                # Next.js App Router
-│   ├── globals.css    # 全局样式和主题
-│   ├── layout.tsx     # 根布局
-│   └── page.tsx       # 主页
-├── components/         # React 组件
-│   ├── ui/            # shadcn/ui 基础组件
-│   ├── ImageGenerator.tsx  # 图片生成器
-│   └── ImageGallery.tsx    # 历史记录
-└── lib/               # 工具函数
-    └── utils.ts       # 通用工具
+├── app/                    # Next.js App Router
+│   ├── api/               # API 路由
+│   │   ├── generate/      # 文本生图接口
+│   │   ├── image-to-image/    # 以图生图接口
+│   │   └── optimize-prompt/   # 提示词优化接口
+│   ├── gallery/           # 图片库页面
+│   ├── globals.css        # 全局样式
+│   ├── layout.tsx         # 根布局
+│   └── page.tsx          # 主页
+├── components/            # React 组件
+│   ├── image-generator/   # 图片生成组件
+│   ├── image-gallery/     # 图片库组件
+│   ├── ui/               # 基础 UI 组件
+│   └── Navigation.tsx    # 导航组件
+├── constants/             # 全局常量配置
+├── lib/                   # 工具库
+│   ├── ai-config.ts      # AI 配置
+│   ├── ai-providers.ts   # AI 服务提供商
+│   ├── storage.ts        # 本地存储管理
+│   └── utils.ts          # 通用工具函数
+└── types/                 # TypeScript 类型定义
+    ├── index.ts          # 核心类型
+    └── api.ts            # API 类型
 ```
 
-📋 **Phase 1.2 (第 2 周)** - ✅ 已完成:
+## 🔧 可用脚本
 
-- [x] 集成第三方 OpenAI 格式 API
-- [x] 实现真实的图片生成功能
-- [x] 添加生成进度显示
-- [x] 错误处理和重试机制
-- [x] 本地存储生成历史
-- [x] 图片下载和管理功能
+- `npm run dev` - 启动开发服务器（使用 Turbopack）
+- `npm run build` - 构建生产版本
+- `npm run start` - 启动生产服务器
+- `npm run lint` - 运行 ESLint 代码检查
 
-📋 **Phase 1.3 (AI SDK 集成)** - ✅ 已完成:
+## ⚙️ 配置说明
 
-- [x] 集成 Vercel AI SDK
-- [x] 提示词智能优化功能
-- [x] AI 驱动的错误分析
-- [x] 智能提示词建议
-- [x] 图片内容分析功能
-- [x] 优化用户体验和交互
+### 环境变量
+| 变量名 | 必需 | 说明 |
+|--------|------|------|
+| `OPENAI_API_KEY` | ✅ | OpenAI API 密钥，用于图片生成和 AI 功能 |
+| `OPENAI_API_BASE_URL` | ❌ | 自定义 OpenAI API 基础 URL，默认为官方地址 |
 
-📋 **Phase 1.4 (以图生图功能)** - ✅ 已完成:
+### AI 模型配置
+- **文本优化**: GPT-4o-mini (性价比优化)
+- **图片分析**: GPT-4o (高质量分析)
+- **错误分析**: GPT-4o-mini (快速响应)
 
-- [x] 标签页界面设计
-- [x] 图片上传组件 (支持拖拽)
-- [x] 变化强度控制滑块
-- [x] 以图生图 API 路由
-- [x] 专用设置面板
-- [x] 响应式界面优化
+## 🎯 使用指南
 
-## 功能特色
+### 文本生图
+1. 选择"文本生图"标签页
+2. 输入描述文字（支持中英文）
+3. 选择艺术风格、尺寸和生成数量
+4. 点击"生成图片"按钮
 
-### 🎨 双模式生成
+### 以图生图
+1. 选择"以图生图"标签页
+2. 拖拽或点击上传参考图片
+3. 输入变化描述和调节变化强度
+4. 选择风格和参数，开始生成
 
-- **文本生图**: 通过描述文字创作全新图片
-- **以图生图**: 基于参考图片进行创意变换
+### 智能功能
+- **提示词优化**: 生成时自动优化描述文字
+- **错误恢复**: 失败时提供智能建议
+- **历史管理**: 在"图片库"页面查看和管理历史
 
-### 🤖 智能提示词优化
+## 🏗️ 架构特点
 
-- 使用 GPT-4o-mini 自动优化用户输入
-- 添加专业艺术术语和技术细节
-- 根据选择风格调整描述
-- 提升生成图片质量
+### 类型安全
+- 完整的 TypeScript 类型定义
+- 统一的类型管理和导出
+- 严格的 ESLint 规则
 
-### 🔍 智能错误分析
+### 模块化设计
+- 组件化架构，职责分离清晰
+- 统一的常量和配置管理
+- 可复用的 hooks 和工具函数
 
-- AI 分析错误信息并提供解决方案
-- 中文友好的错误提示
-- 具体的解决步骤和预防措施
+### 性能优化
+- React 19 + Next.js 15 最新特性
+- 本地存储减少 API 调用
+- 组件懒加载和错误边界
 
-### 💡 创意提示词建议
+## 🤝 贡献指南
 
-- 基于历史记录和风格生成建议
-- 多样化的主题创意
-- 个性化推荐系统
+1. Fork 本仓库
+2. 创建功能分支 (`git checkout -b feature/AmazingFeature`)
+3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
+4. 推送到分支 (`git push origin feature/AmazingFeature`)
+5. 开启 Pull Request
 
-### 🖼️ 图片内容分析
+## 📄 许可证
 
-- 自动分析生成图片内容
-- 质量评估和风格描述
-- 与原始提示词的匹配度分析
+本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情
 
-### 📸 以图生图特色
+## 🙏 致谢
 
-- 🖼️ 拖拽式图片上传
-- 🎚️ 可调节变化强度 (0-100%)
-- 🎨 支持多种艺术风格转换
-- 📏 灵活的尺寸和数量选择
-
-## 技术栈更新
-
-- **AI SDK**: Vercel AI SDK + @ai-sdk/openai
-- **AI 模型**: GPT-4o (图片分析) + GPT-4o-mini (文本优化)
-- **增强功能**: 智能提示词处理、错误分析、内容理解
-
-## 下一步计划
-
-📋 **Phase 2 (第 3-4 周)**:
-
-- [ ] 用户系统和认证
-- [ ] 云端图片存储和管理
-- [ ] 高级 AI 功能 (多模态、批量处理)
-- [ ] 社区功能和分享机制
-
-## 贡献
-
-欢迎提交 Issue 和 Pull Request！
-
-## 许可证
-
-MIT License
+- [Next.js](https://nextjs.org/) - React 全栈框架
+- [shadcn/ui](https://ui.shadcn.com/) - 现代 UI 组件库
+- [Vercel AI SDK](https://sdk.vercel.ai/) - AI 开发工具包
+- [Tailwind CSS](https://tailwindcss.com/) - CSS 框架
+- [Lucide React](https://lucide.dev/) - 图标库
