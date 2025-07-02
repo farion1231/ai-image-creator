@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback, useRef } from "react";
 import { saveGeneratedImages } from "@/lib/storage";
 import type {
   ImageToImageParams,
@@ -31,11 +31,27 @@ export function useImageToImageGeneration() {
     previewUrl: null,
   });
 
-  const updateParams = (updates: Partial<ImageToImageParams>) => {
-    setParams((prev) => ({ ...prev, ...updates }));
-  };
+  // 使用ref来存储定时器ID，避免内存泄漏
+  const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const successTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const handleFileSelect = async (file: File) => {
+  const updateParams = useCallback((updates: Partial<ImageToImageParams>) => {
+    setParams((prev) => ({ ...prev, ...updates }));
+  }, []);
+
+  // 清理所有定时器的工具函数
+  const cleanupTimers = useCallback(() => {
+    if (progressIntervalRef.current) {
+      clearInterval(progressIntervalRef.current);
+      progressIntervalRef.current = null;
+    }
+    if (successTimeoutRef.current) {
+      clearTimeout(successTimeoutRef.current);
+      successTimeoutRef.current = null;
+    }
+  }, []);
+
+  const handleFileSelect = useCallback(async (file: File) => {
     // 验证文件
     if (!file.type.startsWith("image/")) {
       setUploadState((prev) => ({
@@ -77,9 +93,9 @@ export function useImageToImageGeneration() {
         uploadError: "图片上传失败，请重试",
       }));
     }
-  };
+  }, []);
 
-  const handleRemoveImage = () => {
+  const handleRemoveImage = useCallback(() => {
     if (uploadState.previewUrl) {
       URL.revokeObjectURL(uploadState.previewUrl);
     }
@@ -90,9 +106,9 @@ export function useImageToImageGeneration() {
       uploadError: null,
       previewUrl: null,
     });
-  };
+  }, [uploadState.previewUrl]);
 
-  const handleGenerate = async (isRetry = false) => {
+  const handleGenerate = useCallback(async (isRetry = false) => {
     if (!params.prompt.trim()) {
       setState((prev) => ({
         ...prev,
@@ -109,6 +125,9 @@ export function useImageToImageGeneration() {
       return;
     }
 
+    // 清理之前的定时器
+    cleanupTimers();
+
     // 重置状态
     setState((prev) => ({
       ...prev,
@@ -121,7 +140,7 @@ export function useImageToImageGeneration() {
 
     try {
       // 模拟进度更新
-      const progressInterval = setInterval(() => {
+      progressIntervalRef.current = setInterval(() => {
         setState((prev) => ({
           ...prev,
           progress: Math.min(prev.progress + 10, 90),
@@ -143,7 +162,10 @@ export function useImageToImageGeneration() {
         body: formData,
       });
 
-      clearInterval(progressInterval);
+      if (progressIntervalRef.current) {
+        clearInterval(progressIntervalRef.current);
+        progressIntervalRef.current = null;
+      }
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -168,7 +190,7 @@ export function useImageToImageGeneration() {
       }));
 
       // 3秒后自动清除成功状态
-      setTimeout(() => {
+      successTimeoutRef.current = setTimeout(() => {
         setState((prev) => ({ ...prev, success: false, progress: 0 }));
       }, 3000);
     } catch (error) {
@@ -184,9 +206,9 @@ export function useImageToImageGeneration() {
 
       console.error("生成图片失败:", error);
     }
-  };
+  }, [params, cleanupTimers]);
 
-  const handleRetry = () => {
+  const handleRetry = useCallback(() => {
     if (state.retryCount < 3) {
       handleGenerate(true);
     } else {
@@ -195,14 +217,14 @@ export function useImageToImageGeneration() {
         error: "重试次数过多，请稍后再试",
       }));
     }
-  };
+  }, [state.retryCount, handleGenerate]);
 
-  const clearError = () => {
+  const clearError = useCallback(() => {
     setState((prev) => ({ ...prev, error: null }));
     setUploadState((prev) => ({ ...prev, uploadError: null }));
-  };
+  }, []);
 
-  const handleOptimizePrompt = async () => {
+  const handleOptimizePrompt = useCallback(async () => {
     if (!params.prompt.trim()) return;
 
     try {
@@ -239,7 +261,7 @@ export function useImageToImageGeneration() {
     } finally {
       setState((prev) => ({ ...prev, isGenerating: false }));
     }
-  };
+  }, [params.prompt, params.style]);
 
   return {
     params,
@@ -252,5 +274,6 @@ export function useImageToImageGeneration() {
     handleRetry,
     clearError,
     handleOptimizePrompt,
+    cleanupTimers, // 暴露清理函数供组件卸载时使用
   };
 }

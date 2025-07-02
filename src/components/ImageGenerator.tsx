@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -54,6 +54,14 @@ export function ImageGenerator() {
           handleFileSelect: () => {},
           handleRemoveImage: () => {},
         };
+
+  // 组件卸载时清理定时器
+  useEffect(() => {
+    return () => {
+      textToImageHook.cleanupTimers();
+      imageToImageHook.cleanupTimers();
+    };
+  }, [textToImageHook, imageToImageHook]);
 
   // 计算是否可以生成
   const canGenerate =
