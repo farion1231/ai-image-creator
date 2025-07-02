@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef } from "react";
 import { saveGeneratedImages } from "@/lib/storage";
+import { useDebounce } from "@/lib/hooks";
 import type {
   ImageToImageParams,
   GenerationState,
@@ -224,7 +225,8 @@ export function useImageToImageGeneration() {
     setUploadState((prev) => ({ ...prev, uploadError: null }));
   }, []);
 
-  const handleOptimizePrompt = useCallback(async () => {
+  // 实际的优化函数
+  const doOptimizePrompt = useCallback(async () => {
     if (!params.prompt.trim()) return;
 
     try {
@@ -262,6 +264,9 @@ export function useImageToImageGeneration() {
       setState((prev) => ({ ...prev, isGenerating: false }));
     }
   }, [params.prompt, params.style]);
+
+  // 防抖的优化函数，避免用户快速点击产生多个请求
+  const handleOptimizePrompt = useDebounce(doOptimizePrompt, 500);
 
   return {
     params,
