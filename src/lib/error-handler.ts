@@ -159,7 +159,7 @@ export function validateInput(conditions: Array<{ condition: boolean; message: s
 /**
  * API 包装器，统一处理错误
  */
-export function withErrorHandler<T extends (...args: any[]) => Promise<NextResponse>>(
+export function withErrorHandler<T extends (...args: never[]) => Promise<NextResponse>>(
   handler: T
 ): T {
   return (async (...args: Parameters<T>) => {

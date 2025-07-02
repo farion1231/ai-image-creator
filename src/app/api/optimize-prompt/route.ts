@@ -34,12 +34,12 @@ async function optimizePromptHandler(request: NextRequest) {
       throw createApiError('优化失败', 502, 'AI服务返回的优化结果无效');
     }
 
-    const response: OptimizePromptResponse = {
+    const apiResponse: OptimizePromptResponse = {
       success: true,
       optimizedPrompt: optimizedPrompt
     };
     
-    return NextResponse.json(response);
+    return NextResponse.json(apiResponse);
   } catch (error) {
     // 如果是AI服务错误，重新抛出作为 API 错误
     if (error instanceof Error && error.message.includes('AI服务')) {

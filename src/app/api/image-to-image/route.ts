@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import type { ImageToImageResponse } from '@/types/api';
 import type { GeneratedImage } from '@/types';
 import { STYLE_MODIFIERS } from '@/constants';
-import { withErrorHandler, validateInput, createFileError, createApiError, createAuthError } from '@/lib/error-handler';
+import { withErrorHandler, validateInput, createApiError, createAuthError } from '@/lib/error-handler';
 
 async function imageToImageHandler(request: NextRequest) {
   const formData = await request.formData();
@@ -125,12 +125,12 @@ async function imageToImageHandler(request: NextRequest) {
     }
   }
 
-  const response: ImageToImageResponse = {
+  const apiResponse: ImageToImageResponse = {
     success: true,
     images: images
   };
   
-  return NextResponse.json(response);
+  return NextResponse.json(apiResponse);
 }
 
 export const POST = withErrorHandler(imageToImageHandler);

@@ -89,12 +89,12 @@ async function generateHandler(request: NextRequest) {
     throw createApiError('API未返回有效图片', 502, '请稍后重试');
   }
 
-  const response: GenerateResponse = {
+  const apiResponse: GenerateResponse = {
     success: true,
     images: images
   };
   
-  return NextResponse.json(response);
+  return NextResponse.json(apiResponse);
 }
 
 export const POST = withErrorHandler(generateHandler); 

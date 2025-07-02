@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -9,26 +9,46 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { History, RefreshCw } from "lucide-react";
+import { History, RefreshCw, ChevronDown } from "lucide-react";
 import { useImageGallery } from "./image-gallery/useImageGallery";
 import { SearchBox } from "./image-gallery/SearchBox";
 import { EmptyState } from "./image-gallery/EmptyState";
-import { ImageCard } from "./image-gallery/ImageCard";
+import { VirtualizedImageList } from "./image-gallery/VirtualizedImageList";
 
 export function ImageGallery() {
-  const [searchTerm, setSearchTerm] = useState("");
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [containerHeight, setContainerHeight] = useState(400);
+  
   const {
     images,
+    allImages,
     isLoading,
+    searchTerm,
     loadImages,
+    loadMore,
+    handleSearchChange,
     handleToggleFavorite,
     handleDeleteImage,
     handleDownloadImage,
+    hasMore,
+    canLoadMore,
   } = useImageGallery();
 
-  const filteredImages = images.filter((img) =>
-    img.prompt.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // 自动调整容器高度
+  useEffect(() => {
+    const updateHeight = () => {
+      if (containerRef.current) {
+        const viewportHeight = window.innerHeight;
+        const containerTop = containerRef.current.getBoundingClientRect().top;
+        const availableHeight = viewportHeight - containerTop - 150; // 留出底部空间
+        setContainerHeight(Math.max(400, Math.min(600, availableHeight)));
+      }
+    };
+
+    updateHeight();
+    window.addEventListener('resize', updateHeight);
+    return () => window.removeEventListener('resize', updateHeight);
+  }, []);
 
   return (
     <Card className="gradient-card card-shadow border-blue-100/50 backdrop-blur-md h-fit">
@@ -59,32 +79,57 @@ export function ImageGallery() {
 
       <CardContent className="space-y-4">
         {/* 搜索框 */}
-        <SearchBox searchTerm={searchTerm} onSearchChange={setSearchTerm} />
+        <SearchBox searchTerm={searchTerm} onSearchChange={handleSearchChange} />
 
-        {/* 图片列表 */}
-        <div className="space-y-3">
-          {filteredImages.length === 0 ? (
+        {/* 图片列表容器 */}
+        <div ref={containerRef} className="relative">
+          {images.length === 0 ? (
             <EmptyState isLoading={isLoading} hasSearchTerm={!!searchTerm} />
           ) : (
-            filteredImages.map((image) => (
-              <ImageCard
-                key={image.id}
-                image={image}
+            <>
+              <VirtualizedImageList
+                images={images}
                 onToggleFavorite={handleToggleFavorite}
                 onDownload={handleDownloadImage}
                 onDelete={handleDeleteImage}
+                height={containerHeight}
               />
-            ))
+              
+              {/* 加载更多按钮 */}
+              {hasMore && (
+                <div className="flex justify-center pt-4">
+                  <Button
+                    onClick={loadMore}
+                    disabled={!canLoadMore}
+                    variant="outline"
+                    size="sm"
+                    className="text-slate-600 hover:text-slate-800 hover:bg-sky-50/50"
+                  >
+                    {isLoading ? (
+                      <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                    ) : (
+                      <ChevronDown className="w-4 h-4 mr-2" />
+                    )}
+                    {isLoading ? '加载中...' : '加载更多'}
+                  </Button>
+                </div>
+              )}
+            </>
           )}
         </div>
 
         {/* 底部统计 */}
-        {images.length > 0 && (
+        {allImages.length > 0 && (
           <div className="pt-3 border-t border-sky-200/50 text-center text-sm text-slate-500">
-            共 {images.length} 张作品
-            {images.filter((img) => img.isFavorite).length > 0 && (
+            共 {allImages.length} 张作品
+            {allImages.filter((img) => img.isFavorite).length > 0 && (
               <span className="ml-2">
-                · {images.filter((img) => img.isFavorite).length} 张收藏
+                · {allImages.filter((img) => img.isFavorite).length} 张收藏
+              </span>
+            )}
+            {images.length < allImages.length && (
+              <span className="ml-2">
+                · 已显示 {images.length} 张
               </span>
             )}
           </div>
